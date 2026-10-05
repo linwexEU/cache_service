@@ -1,0 +1,22 @@
+services:
+  database:
+    image: postgres:17
+    env_file: 
+      - ./docker/.env-docker
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  micro_cache_service: 
+    build: 
+      dockerfile: ./docker/Dockerfile
+    command: ["./docker/app.sh"]
+    env_file: 
+      - ./docker/.env-docker
+    ports: 
+      - "7777:8000"
+    depends_on: 
+      database: 
+        condition: service_healthy
